@@ -1,0 +1,1 @@
+bash gen_live_ingest.sh localhost 9001 ./ffmpeg
