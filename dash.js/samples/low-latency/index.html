@@ -96,7 +96,7 @@
                 <form action="javascript:applyParameters()">
                     <fieldset>
                         <legend>Configurable parameters</legend>
-                        <p>Target Latency (secs): <input type="number" id="target-latency" value="3" min="0" step="0.1"></p>
+                        <p>Target Latency (secs): <input type="number" id="target-latency" value="1" min="0" step="0.1"></p>
                         <p>Min. drift (secs): <input type="number" id="min-drift" value="0.05" min="0.0" max="0.5" step="0.01"></p>
                         <p>Catch-up playback rate (%): <input type="number" id="catchup-playback-rate" value="0.5" min="0.0" max="0.5" step="0.01"></p>
                         <button type="submit">Apply</button>
@@ -111,6 +111,7 @@
                     <li>Min. drift: <span id="mindrift-tag"></span></li>
                     <li>Playback rate: <span id="playbackrate-tag"></span></li>
                     <li>Buffer: <b><span id="buffer-tag"></span></b></li>
+                    <li>Quality: <b><span id="quality-tag"></span></b></li>
                 </ul>
             </fieldset>
         </div>
@@ -156,6 +157,19 @@
             var currentBuffer = dashMetrics.getCurrentBufferLevel("video");
             document.getElementById("buffer-tag").innerHTML = currentBuffer + " secs";
         }, 200);
+
+        player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_REQUESTED, (e) => {
+            console.warn('Quality changed requested', e);
+        });
+
+        player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_RENDERED, (e) => {
+            console.warn('Quality changed', e);
+            const quality = player.getBitrateInfoListFor('video')[e.newQuality];
+            if (!quality) {
+                return;
+            }
+            document.querySelector('#quality-tag').innerText = `${quality.width}x${quality.height}, ${quality.bitrate / 1000}Kbps`;
+        });
     });
 </script>
 <script src="../highlighter.js"></script>
