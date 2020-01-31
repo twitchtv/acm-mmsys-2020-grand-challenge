@@ -33,8 +33,8 @@ ${FF} \
 -c:v ${VCODEC} \
 -b:v:0 230K -s:v:0 284x160 \
 -b:v:1 630K -s:v:1 640x360 \
--b:v:2 1262K -s:v:2 852x480 \
--b:v:3 1262K -s:v:3 1280x720 \
+-b:v:2 1461K -s:v:2 852x480 \
+-b:v:3 2406K -s:v:3 1280x720 \
 -map 0:v:0 -map 0:v:0 -map 0:v:0 -map 0:v:0 \
 -use_timeline 0 \
 -use_template 1 \
