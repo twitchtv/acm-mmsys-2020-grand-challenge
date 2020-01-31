@@ -20,6 +20,8 @@ We're still working on network profiles to exercise our representative condition
 
 ## How to use
 - Install and start each project locally by following their enclosed README
+   - The DASH server should be running and available at http://localhost:9001/live/live.mpd
+   - Dash.js should be running
 - Once each is running, navigate to http://localhost:3000/samples/low-latency/index.html to see the stream play out
 
 To verify everything is working correctly, check that playback of Big Buck Bunny is functioning at the above link. The player should be able to stream smoothly configured down to 0.5s of latency.
