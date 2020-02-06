@@ -20,6 +20,14 @@
             player = dashjs.MediaPlayer().create();
             player.initialize(video, url, true);
             player.updateSettings({ 'streaming': { 'lowLatencyEnabled': true }});
+            player.updateSettings({'debug': {'logLevel': dashjs.Debug.LOG_LEVEL_WARNING }});
+            player.updateSettings({
+            'streaming': {
+                'abr': {
+                    'useDefaultABRRules': true
+                }
+            }
+        });
 
             applyParameters();
 
@@ -90,7 +98,7 @@
 <body>
 <div>
     <div class="video-wrapper">
-        <video controls="true"></video>
+        <video controls="true" autoplay muted></video>
         <div>
             <div>
                 <form action="javascript:applyParameters()">
@@ -113,6 +121,7 @@
                     <li>Buffer: <b><span id="buffer-tag"></span></b></li>
                     <li>Quality: <b><span id="quality-tag"></span></b></li>
                 </ul>
+                <div id="stats"></div>
             </fieldset>
         </div>
     </div>
@@ -140,36 +149,97 @@
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var player = init();
+        const player = init();
+        const video = document.querySelector("video")
+        let stallingAt = -1;
+        const CMA = () => {
+            let average = 0;
+            let count = 0;
 
-        setInterval(function() {
-            var dashMetrics = player.getDashMetrics();
-            var settings = player.getSettings();
-
-            var currentLatency = parseFloat(player.getCurrentLiveLatency(), 10);
-            document.getElementById("latency-tag").innerHTML = currentLatency + " secs";
-
-            document.getElementById("mindrift-tag").innerHTML = settings.streaming.liveCatchUpMinDrift + " secs";
-
-            var currentPlaybackRate = player.getPlaybackRate();
-            document.getElementById("playbackrate-tag").innerHTML = Math.round(currentPlaybackRate * 100) / 100;
-
-            var currentBuffer = dashMetrics.getCurrentBufferLevel("video");
-            document.getElementById("buffer-tag").innerHTML = currentBuffer + " secs";
-        }, 200);
-
-        player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_REQUESTED, (e) => {
-            console.warn('Quality changed requested', e);
-        });
-
-        player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_RENDERED, (e) => {
-            console.warn('Quality changed', e);
-            const quality = player.getBitrateInfoListFor('video')[e.newQuality];
-            if (!quality) {
-                return;
+            return {
+                average(val) {
+                    if (isNaN(val)) {
+                        return 0;
+                    }
+                    average = average + ((val - average) / ++count);
+                    return average;
+                },
             }
-            document.querySelector('#quality-tag').innerText = `${quality.width}x${quality.height}, ${quality.bitrate / 1000}Kbps`;
-        });
+        }
+
+        window.startRecording = () => {
+            console.info('Begin recording');
+
+            const latencyCMA = CMA();
+            const bufferCMA = CMA();
+            const history = window.abrHistory = {
+                switchHistory: [],
+                stallHistory: [],
+                avgLatecy: 0,
+                avgBufferLength: 0,
+            };
+
+            recordSwitch(player.getBitrateInfoListFor('video')[player.getQualityFor('video')]);
+
+            setInterval(function() {
+                var dashMetrics = player.getDashMetrics();
+                var settings = player.getSettings();
+
+                var currentLatency = parseFloat(player.getCurrentLiveLatency(), 10);
+                document.getElementById("latency-tag").innerHTML = currentLatency + " secs";
+
+                document.getElementById("mindrift-tag").innerHTML = settings.streaming.liveCatchUpMinDrift + " secs";
+
+                var currentPlaybackRate = player.getPlaybackRate();
+                document.getElementById("playbackrate-tag").innerHTML = Math.round(currentPlaybackRate * 100) / 100;
+
+                var currentBuffer = dashMetrics.getCurrentBufferLevel("video");
+                document.getElementById("buffer-tag").innerHTML = currentBuffer + " secs";
+
+                history.avgLatecy = latencyCMA.average(currentLatency);
+                history.avgBufferLength = bufferCMA.average(currentBuffer);
+                console.log(history);
+            }, 200);
+
+            player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_REQUESTED, (e) => {
+                console.warn('Quality changed requested', e);
+            });
+
+            player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_RENDERED, (e) => {
+                console.warn('Quality changed', e);
+                const quality = player.getBitrateInfoListFor('video')[e.newQuality];
+                if (!quality) {
+                    return;
+                }
+                recordSwitch(quality);
+            });
+
+            video.addEventListener('waiting', (e) => {
+                stallingAt = video.currentTime;
+                history.stallHistory.push({ start: video.currentTime, end: null });
+                console.warn('stalling');
+            });
+
+            video.addEventListener('timeupdate', () => {
+                const lastStall = history.stallHistory[history.stallHistory.length - 1];
+                if (lastStall && lastStall.end === null) {
+                    lastStall.end = video.currentTime;
+                    console.warn('recovered');
+                }
+            });
+
+            function recordSwitch(quality) {
+                document.querySelector('#quality-tag').innerText = `${quality.width}x${quality.height}, ${quality.bitrate / 1000}Kbps`;
+
+                const switchHistory = history.switchHistory;
+                const prev = switchHistory[switchHistory.length - 1];
+                const videoNow = video.currentTime;
+                if (prev) {
+                    prev.end = videoNow;
+                }
+                switchHistory.push({ start: videoNow, end: -1, quality });
+            }
+        }
     });
 </script>
 <script src="../highlighter.js"></script>

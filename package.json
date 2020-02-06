@@ -1,0 +1,25 @@
+{
+  "name": "acm-grand-challenge-2020",
+  "version": "1.0.0",
+  "description": "This repo contains assets for Twitch's ACM MMSys 2020 Grand Challenge, [Adaptation Algorithm for Near-Second Latency](https://2020.acmmmsys.org/lll_challenge.php). It contains everything you need to build and test low-latency ABR algorithms locally.",
+  "main": "dash.js",
+  "dependencies": {
+    "puppeteer": "^2.1.1",
+    "puppeteer-core": "^2.1.1",
+    "shelljs": "^0.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twitchtv/acm-grand-challenge-2020.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/twitchtv/acm-grand-challenge-2020/issues"
+  },
+  "homepage": "https://github.com/twitchtv/acm-grand-challenge-2020#readme"
+}
