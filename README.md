@@ -27,7 +27,12 @@ We're still working on network profiles to exercise our representative condition
    - Dash.js should be running
 - Once each is running, navigate to http://localhost:3000/samples/low-latency/index.html to see the stream play out
 
-To verify everything is working correctly, check that playback of Big Buck Bunny is functioning at the above link. The player should be able to stream smoothly configured down to 0.5s of latency.
+To verify everything is working correctly, check that playback of Big Buck Bunny is functioning at the above link. The player should be able to stream smoothly configured down to 0.5s of latency
+
+### To perform a test run:
+- Execute the following command: `node run.js`
+This will kick off an automated test, during which network conditions will be emulated. At the end of the run the statistics will be logged. We'll be adding new test runs throughout the challenge.
+
 
 ## Help! Things aren't working
 Below is a compilation of common issues & how to fix them. If you don't see your problem here, please file an issue and we'll do our best to help.
