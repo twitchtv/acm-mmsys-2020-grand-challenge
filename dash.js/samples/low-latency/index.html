@@ -151,7 +151,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         const player = init();
         const video = document.querySelector("video")
-        let stallingAt = -1;
+        let stallingAt = null;
         const CMA = () => {
             let average = 0;
             let count = 0;
@@ -167,21 +167,7 @@
             }
         }
 
-        window.startRecording = () => {
-            console.info('Begin recording');
-
-            const latencyCMA = CMA();
-            const bufferCMA = CMA();
-            const history = window.abrHistory = {
-                switchHistory: [],
-                stallHistory: [],
-                avgLatecy: 0,
-                avgBufferLength: 0,
-            };
-
-            recordSwitch(player.getBitrateInfoListFor('video')[player.getQualityFor('video')]);
-
-            setInterval(function() {
+        setInterval(function() {
                 var dashMetrics = player.getDashMetrics();
                 var settings = player.getSettings();
 
@@ -195,10 +181,6 @@
 
                 var currentBuffer = dashMetrics.getCurrentBufferLevel("video");
                 document.getElementById("buffer-tag").innerHTML = currentBuffer + " secs";
-
-                history.avgLatecy = latencyCMA.average(currentLatency);
-                history.avgBufferLength = bufferCMA.average(currentBuffer);
-                console.log(history);
             }, 200);
 
             player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_REQUESTED, (e) => {
@@ -211,33 +193,73 @@
                 if (!quality) {
                     return;
                 }
-                recordSwitch(quality);
+                document.querySelector('#quality-tag').innerText = `${quality.width}x${quality.height}, ${quality.bitrate / 1000}Kbps`;
+            });
+
+        window.startRecording = () => {
+            console.info('Begin recording');
+
+            const latencyCMA = CMA();
+            const bufferCMA = CMA();
+            const history = window.abrHistory = {
+                switchHistory: [],
+                stallDuration: 0,
+                avgLatency: 0,
+                avgBufferLength: 0,
+            };
+
+            // Record the initial quality
+            recordSwitch(player.getBitrateInfoListFor('video')[player.getQualityFor('video')]);
+
+            let pollInterval = -1;
+            window.stopRecording = () => {
+                clearInterval(pollInterval);
+                checkStallResolution();
+                const lastQuality = history.switchHistory[history.switchHistory.length - 1];
+                if (lastQuality.end === null) {
+                    lastQuality.end = video.currentTime;
+                }
+            }
+
+            pollInterval = setInterval(function() {
+                const currentLatency = parseFloat(player.getCurrentLiveLatency(), 10);
+                const currentBuffer = player.getDashMetrics().getCurrentBufferLevel("video");
+                history.avgLatency = latencyCMA.average(currentLatency);
+                history.avgBufferLength = bufferCMA.average(currentBuffer);
+                console.log(history);
+            }, 200);
+
+
+            player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_RENDERED, (e) => {
+                recordSwitch(player.getBitrateInfoListFor('video')[e.newQuality]);
             });
 
             video.addEventListener('waiting', (e) => {
-                stallingAt = video.currentTime;
-                history.stallHistory.push({ start: video.currentTime, end: null });
-                console.warn('stalling');
+                stallingAt = performance.now();
             });
 
             video.addEventListener('timeupdate', () => {
-                const lastStall = history.stallHistory[history.stallHistory.length - 1];
-                if (lastStall && lastStall.end === null) {
-                    lastStall.end = video.currentTime;
-                    console.warn('recovered');
-                }
+                checkStallResolution();
             });
 
             function recordSwitch(quality) {
-                document.querySelector('#quality-tag').innerText = `${quality.width}x${quality.height}, ${quality.bitrate / 1000}Kbps`;
-
+                if (!quality) {
+                    return;
+                }
                 const switchHistory = history.switchHistory;
                 const prev = switchHistory[switchHistory.length - 1];
                 const videoNow = video.currentTime;
                 if (prev) {
                     prev.end = videoNow;
                 }
-                switchHistory.push({ start: videoNow, end: -1, quality });
+                switchHistory.push({ start: videoNow, end: null, quality });
+            }
+
+            function checkStallResolution() {
+                if (stallingAt !== null) {
+                    history.stallDuration += (performance.now() - stallingAt);
+                    stallingAt = null;
+                }
             }
         }
     });

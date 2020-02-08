@@ -31,15 +31,14 @@ echo ${FF} -h all | grep ldash
 ${FF} \
 -re -i bbb.mp4 \
 -c:v ${VCODEC} \
--b:v:0 230K -s:v:0 284x160 \
--b:v:1 630K -s:v:1 640x360 \
--b:v:2 1461K -s:v:2 852x480 \
--b:v:3 2406K -s:v:3 1280x720 \
--map 0:v:0 -map 0:v:0 -map 0:v:0 -map 0:v:0 \
+-b:v:0 200K -s:v:0 640x360 \
+-b:v:1 600K -s:v:1 852x480 \
+-b:v:2 1000K -s:v:2 1280x720 \
+-map 0:v:0 -map 0:v:0 -map 0:v:0 \
 -use_timeline 0 \
 -use_template 1 \
 -frag_type every_frame \
--adaptation_sets "id=0,seg_duration=0.5,streams=0,1,2,3" \
+-adaptation_sets "id=0,seg_duration=0.5,streams=0,1,2" \
 -g:v 15 -keyint_min:v 15 -sc_threshold:v 0 -streaming 1 -ldash 1 -tune zerolatency \
 -color_primaries ${COLOR} -color_trc ${COLOR} -colorspace ${COLOR} \
 -f dash \

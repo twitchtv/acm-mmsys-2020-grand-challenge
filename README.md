@@ -19,6 +19,7 @@ We're still working on network profiles to exercise our representative condition
 - MacOS
     - If you're using another operating system, don't worry. You'll just have to build ffmpeg from source. See that README in dash-ll-server/ for instructions.
 - python3
+- node.js v12+
 
 ## How to use
 - Install and start each project locally by following their enclosed README
@@ -27,6 +28,22 @@ We're still working on network profiles to exercise our representative condition
 - Once each is running, navigate to http://localhost:3000/samples/low-latency/index.html to see the stream play out
 
 To verify everything is working correctly, check that playback of Big Buck Bunny is functioning at the above link. The player should be able to stream smoothly configured down to 0.5s of latency.
+
+## Help! Things aren't working
+Below is a compilation of common issues & how to fix them. If you don't see your problem here, please file an issue and we'll do our best to help.
+
+```
+Access to fetch at 'http://localhost:9001/live/chunk-stream2-00167.m4s' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+```
+
+If you see an error like this, it means that ffmpeg is struggling to encode quickly enough. Try the following:
+- Allow ffmpeg to warm up for a few seconds. You can monitor the speed by checking the logs of `run_gen.sh`:
+`frame=  202 fps= 28 q=30.0 q=25.0 q=26.0 size=N/A time=00:00:06.70 bitrate=N/A dup=6 drop=0 speed=0.943x`
+Wait until the speed is above .9 before attempting to test.
+- Close other programs to reduce the CPU load
+- Run this setup on a faster computer
+- If you're still having the above issue, please open an issue.
+
 
 ## Important Notes
 
