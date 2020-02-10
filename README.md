@@ -13,9 +13,10 @@ This repo contains assets for Twitch's ACM MMSys 2020 Grand Challenge, [Adaptati
 
 ## Requirements
 - MacOS
-    - If you're using another operating system, don't worry. You'll just have to build ffmpeg from source. See that README in dash-ll-server/ for instructions.
+    - If you're using another operating system, don't worry. You'll just have to build ffmpeg from source, and change a few variables. See that README in dash-ll-server/ for instructions.
 - python3
 - node.js v12+
+- Chrome (latest, v80 at the moment)
 
 
 ## How to use
@@ -69,6 +70,15 @@ Wait until the speed is above .9 before attempting to test.
 - If you're still having the above issue, please open an issue.
 - Try running with the `PROFILE_FAST` option. See the "How to use" section above for more instruction.
 
+```
+$ node run.js
+Error: Failed to launch the browser process! spawn /Applications/Google Chrome.app/Contents/MacOS/Google Chrome ENOENT
+```
+You need to change your Chrome executable path in `run.js`:
+
+`const CHROME_PATH = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";`
+
+Change the path to the location of your Chrome executable.
 
 ## Important Notes
 
