@@ -1,6 +1,9 @@
 const puppeteer = require("puppeteer-core");
+const patterns = require("./network-patterns.js");
 const CHROME_PATH =
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+
+const PROFILE = process.env.PROFILE;
 
 run()
   .then(() => console.log("Done"))
@@ -16,15 +19,19 @@ async function run() {
 
   const page = await browser.newPage();
   await page.goto("http://localhost:3000/samples/low-latency/index.html");
-
   const cdpClient = await page.target().createCDPSession();
 
+  console.log("Waiting for player to setup.");
   await page.evaluate(() => {
     return new Promise(resolve => {
-      if (player.isReady()) {
+      const hasLoaded = player.getBitrateInfoListFor("video").length !== 0;
+      if (hasLoaded) {
+        console.log('Stream loaded, setup complete.');
         resolve();
       } else {
-        player.on(dashjs.MediaPlayer.events.PLAYBACK_INITIALIZED, (e) => {
+        console.log('Waiting for stream to load.');
+        player.on(dashjs.MediaPlayer.events.STREAM_INITIALIZED, (e) => {
+          console.log('Load complete.')
           resolve();
       });
       }
@@ -32,9 +39,7 @@ async function run() {
   });
 
   console.log("Waiting for 10 seconds of uninterrupted max-quality playback before starting.");
-
   const stabilized = await awaitStabilization(page);
-
   if (!stabilized) {
     console.error(
       "Timed out after 30 seconds. The player must be stable at the max rendition before emulation begins. Make sure you're on a stable connection of at least 3mbps, and try again."
@@ -46,38 +51,13 @@ async function run() {
     window.startRecording();
   });
 
-  /*
-    Encoding ladder
-  -b:v:1 200K -s:v:1 640x360 \
-  -b:v:2 600K -s:v:2 852x480 \
-  -b:v:3 1000K -s:v:3 1280x720 \
-    */
-
-  await runNetworkPattern(cdpClient, [
-    {
-      speed: 800,
-      duration: 30
-    },
-    {
-      speed: 400,
-      duration: 30
-    },
-    {
-      speed: 800,
-      duration: 30
-    },
-    {
-      speed: 1000,
-      duration: 30
-    },
-  ]);
+  const networkPattern = patterns[PROFILE] || patterns.PROFILE_NORMAL;
+  console.log(networkPattern);
+  await runNetworkPattern(cdpClient, networkPattern);
 
   const result = await page.evaluate(() => {
     window.stopRecording();
-    return {
-      endVideoTime: document.querySelector("video").currentTime,
-      abrHistory: window.abrHistory
-    };
+    return window.abrHistory;
   });
   console.log("Run complete");
   console.log(result);
@@ -85,6 +65,7 @@ async function run() {
 
 async function awaitStabilization (page) {
   return await page.evaluate(() => {
+    console.log('Awaiting stabilization...')
     return new Promise(resolve => {
       const maxQuality = player.getBitrateInfoListFor("video").length - 1;
       let timer = -1;
@@ -94,20 +75,21 @@ async function awaitStabilization (page) {
       }, 30000)
 
       if (player.getQualityFor("video") === maxQuality) {
+        console.log('Starting stabilization timer...')
         timer = setTimeout(() => {
           clearTimeout(failTimer);
           resolve(true);
         }, 10000);
       }
 
-      player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_REQUESTED, e => {
+      player.on(dashjs.MediaPlayer.events.QUALITY_CHANGE_RENDERED, e => {
         console.warn("Quality changed requested", e);
         if (e.newQuality !== maxQuality) {
-          console.log('Clearing timer...', e.newQuality, maxQuality)
+          console.log('Clearing stabilization timer...', e.newQuality, maxQuality)
           clearTimeout(timer);
           timer = -1;
         } else if (timer === -1) {
-          console.log('Starting timer...')
+          console.log('Starting stabilization timer...')
           timer = setTimeout(() => {
             clearTimeout(failTimer);
             resolve(true);
@@ -136,3 +118,5 @@ function setNetworkSpeedInMbps(client, mbps) {
     downloadThroughput: (mbps * 1024) / 8
   });
 }
+
+

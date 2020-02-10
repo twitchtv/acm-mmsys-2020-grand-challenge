@@ -5,12 +5,13 @@
   "main": "dash.js",
   "dependencies": {
     "puppeteer": "^2.1.1",
-    "puppeteer-core": "^2.1.1",
-    "shelljs": "^0.8.3"
+    "puppeteer-core": "^2.1.1"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "bash ./dash-ll-server/run_gen.sh ${PROFILE} $npm_config_profile & node run.js ${PROFILE}",
+    "test:fast": "env PROFILE=PROFILE_FAST npm run test",
+    "test:normal": "env PROFILE=PROFILE_NORMAL npm run test"
   },
   "repository": {
     "type": "git",
@@ -21,5 +22,5 @@
   "bugs": {
     "url": "https://github.com/twitchtv/acm-grand-challenge-2020/issues"
   },
-  "homepage": "https://github.com/twitchtv/acm-grand-challenge-2020#readme"
+  "homepage:": "https://github.com/twitchtv/acm-grand-challenge-2020#readme"
 }
