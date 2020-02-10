@@ -11,28 +11,47 @@ This repo contains assets for Twitch's ACM MMSys 2020 Grand Challenge, [Adaptati
 - ffmpeg for MacOS built from the dashll branch (https://gitlab.com/fflabs/ffmpeg/tree/dashll) at commit 0fe5e13b9b76e7fac0c2dac1f4fdc8b37c007d13
 
 
-#### Network Profiles
-
-We're still working on network profiles to exercise our representative conditions, but the above assets will get you started until then.
-
 ## Requirements
 - MacOS
     - If you're using another operating system, don't worry. You'll just have to build ffmpeg from source. See that README in dash-ll-server/ for instructions.
 - python3
 - node.js v12+
 
+
 ## How to use
-- Install and start each project locally by following their enclosed README
-   - The DASH server should be running and available at http://localhost:9001/live/live.mpd
-   - Dash.js should be running
+
+- Install each project locally by following their enclosed README
+- Start Dash.js by running `grunt dev` in the `dash.js` folder
+- In a separate terminal window, start the ingest server by running `bash run_server.sh` in the `dash-ll-server` folder
+
+From here you have a few options:
+#### Executing test runs
+This option should be used for validating your solution against our network patterns.
+
+- Execute the following command: `npm run test`
+    - If your computer isn't fast enough (see the "Help!" section below), try running the fast profile: `env PROFILE=PROFILE_FAST npm run test`
+
+Note: The python server (`bash run_server.sh` step above) and the dash server (`grunt dev` step above) must be running to execute these tests!
+
+This will kick off an automated test, during which network conditions will be emulated. At the end of the run the statistics will be logged. We'll be adding new test runs throughout the challenge.
+
+#### Local development
+This option should be used for developing a solution.
+
+- In a new terminal, naviagte into the `dash-ll-server` folder
+- Execute `bash run_gen.sh`
+- The DASH server should be running and available at http://localhost:9001/live/live.mpd
+    - If your computer isn't fast enough to run the default profile, try `bash run_gen.sh PROFILE_FAST`
+    - Note! If you've reached the end of the stream (~10 minutes), you'll have to restart `run_gen.sh`
 - Once each is running, navigate to http://localhost:3000/samples/low-latency/index.html to see the stream play out
 
 To verify everything is working correctly, check that playback of Big Buck Bunny is functioning at the above link. The player should be able to stream smoothly configured down to 0.5s of latency
 
-### To perform a test run:
-- Execute the following command: `node run.js`
-This will kick off an automated test, during which network conditions will be emulated. At the end of the run the statistics will be logged. We'll be adding new test runs throughout the challenge.
+#### Local Network Emulation
+See https://developers.google.com/web/tools/chrome-devtools/network#throttle on how to simulate network conditions in Chrome. This will be useful for testing your work.
 
+### Network Profiles
+- There are currently two network profiles available, one for the `PROFILE_FAST` environment and one for `PROFILE_NORMAL`.
 
 ## Help! Things aren't working
 Below is a compilation of common issues & how to fix them. If you don't see your problem here, please file an issue and we'll do our best to help.
@@ -48,6 +67,7 @@ Wait until the speed is above .9 before attempting to test.
 - Close other programs to reduce the CPU load
 - Run this setup on a faster computer
 - If you're still having the above issue, please open an issue.
+- Try running with the `PROFILE_FAST` option. See the "How to use" section above for more instruction.
 
 
 ## Important Notes
