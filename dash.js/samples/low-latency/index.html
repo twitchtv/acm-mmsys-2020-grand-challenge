@@ -204,8 +204,8 @@
             const history = window.abrHistory = {
                 switchHistory: [],
                 stallDuration: 0,
-                avgLatency: 0,
-                avgBufferLength: 0,
+                averageLatency: 0,
+                averageBufferLength: 0,
             };
 
             // Record the initial quality
@@ -219,13 +219,14 @@
                 if (lastQuality.end === null) {
                     lastQuality.end = video.currentTime;
                 }
+                console.warn('Run ended. Please navigate back to node for results.');
             }
 
             pollInterval = setInterval(function() {
                 const currentLatency = parseFloat(player.getCurrentLiveLatency(), 10);
                 const currentBuffer = player.getDashMetrics().getCurrentBufferLevel("video");
-                history.avgLatency = latencyCMA.average(currentLatency);
-                history.avgBufferLength = bufferCMA.average(currentBuffer);
+                history.averageLatency = latencyCMA.average(currentLatency);
+                history.averageBufferLength = bufferCMA.average(currentBuffer);
                 console.log(history);
             }, 200);
 

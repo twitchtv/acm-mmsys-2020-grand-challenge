@@ -1,12 +1,17 @@
+const fs = require("fs");
 const puppeteer = require("puppeteer-core");
 const patterns = require("./network-patterns.js");
+const stats = require("./stats");
 const CHROME_PATH =
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 const PROFILE = process.env.PROFILE;
 
 run()
-  .then(() => console.log("Done"))
+  .then((result) => {
+    console.log("Test finished. Press cmd+c to exit.");
+    fs.writeFileSync(`./results/run-${new Date().toISOString().split(' ').join('-')}.json`, JSON.stringify(result));
+  })
   .catch(error => console.log(error));
 
 async function run() {
@@ -55,12 +60,18 @@ async function run() {
   console.log(networkPattern);
   await runNetworkPattern(cdpClient, networkPattern);
 
-  const result = await page.evaluate(() => {
+  const metrics = await page.evaluate(() => {
     window.stopRecording();
+    player.pause();
     return window.abrHistory;
   });
   console.log("Run complete");
+  console.log(metrics);
+  ({ switchHistory, ...result } = metrics);
+  result.averageBitrate = stats.computeAverageBitrate(switchHistory);
+
   console.log(result);
+  return result;
 }
 
 async function awaitStabilization (page) {
@@ -118,5 +129,3 @@ function setNetworkSpeedInMbps(client, mbps) {
     downloadThroughput: (mbps * 1024) / 8
   });
 }
-
-
