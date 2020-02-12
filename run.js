@@ -10,6 +10,9 @@ const PROFILE = process.env.PROFILE;
 run()
   .then((result) => {
     console.log("Test finished. Press cmd+c to exit.");
+    if (!fs.existsSync('./results')){
+      fs.mkdirSync('./results');
+    }
     fs.writeFileSync(`./results/run-${new Date().toISOString().split(' ').join('-')}.json`, JSON.stringify(result));
   })
   .catch(error => console.log(error));
@@ -69,6 +72,7 @@ async function run() {
   console.log(metrics);
   ({ switchHistory, ...result } = metrics);
   result.averageBitrate = stats.computeAverageBitrate(switchHistory);
+  result.numSwitches = switchHistory.length;
 
   console.log(result);
   return result;
