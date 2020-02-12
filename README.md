@@ -93,7 +93,7 @@ If you'd like to discuss changing any of the above, please open an issue.
 ### Important links
 - Local Dash.js low-latency page: http://localhost:3000/samples/low-latency/index.html
 - Local stream URL http://localhost:9001/live/live.mpd
-
+- http://streaming.university/ACTE/ Currently the most accurate way to do bandwidth estimation with chunked-transfer encoding. A good place to start.
 
 ### Kudos
 Big thanks to Will Law, the Dash.js team, and the video-dev slack for their help in setting up this low-latency development environment. Kudos to FFLabs for creating the dash server and ffmpeg script.
