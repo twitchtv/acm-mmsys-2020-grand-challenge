@@ -12,7 +12,7 @@ A local server to generate and serve a low-latency DASH stream
 - MacOS (if not using MacOS, please follow the instructions toe build ffmpeg from source)
 
 ### Building ffmpeg
-The included ffmpeg asset is built for MacOS. If you're on different OS, you'll need to replace that binary with one you build yourself. Pull down the "dashll" branch here https://gitlab.com/fflabs/ffmpeg/tree/dashll and follow this guide: https://trac.ffmpeg.org/wiki/CompilationGuide/Generic. Once finished, copy and replace the ffmpeg binary with your built one. Please open an issue if you're having trouble getting this running.
+The included ffmpeg asset is built for MacOS. If you're on different OS, you'll need to replace that binary with one you build yourself. Pull down the "dashll" branch here https://gitlab.com/fflabs/ffmpeg/tree/dashll and follow this guide: https://trac.ffmpeg.org/wiki/CompilationGuide/Generic. Once finished, **copy and replace the included ffmpeg binary with your built one. It must have the same name (ffmeg)**. Please open an issue if you're having trouble getting this running.
 
 
 ### Credits
