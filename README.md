@@ -30,7 +30,7 @@ From here you have a few options:
 This option should be used for validating your solution against our network patterns.
 
 - Execute the following command: `npm run test`
-    - If your computer isn't fast enough (see the "Help!" section below), try running the fast profile: `env PROFILE=PROFILE_FAST npm run test`
+    - If your computer isn't fast enough (see the "Help!" section below), try running the fast profile: `npm run test:fast`
 - When the test run has concluded, end the program in the same shell (cmd+c on mac, ctrl+c on windows)
 - Tests results are written to the results/ folder
 
