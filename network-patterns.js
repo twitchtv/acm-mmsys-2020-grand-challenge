@@ -1,23 +1,23 @@
 const PROFILE_NORMAL = [
     {
       speed: 1000,
-      duration: 5
+      duration: 30
     },
     {
       speed: 800,
-      duration: 5
+      duration: 30
     },
     {
       speed: 400,
-      duration: 5
+      duration: 30
     },
     {
       speed: 800,
-      duration: 5
+      duration: 30
     },
     {
       speed: 1000,
-      duration: 5
+      duration: 30
     },
   ];
 

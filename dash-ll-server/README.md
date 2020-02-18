@@ -7,9 +7,15 @@ A local server to generate and serve a low-latency DASH stream
 4. In a separate terminal, start ffmpeg with `bash run_gen.sh`
 5. The DASH manifest will be located at http://localhost:9001/live/live.mpd
 
+If you're not using MacOS, please remove the included "ffmpeg" binary and follow the instructions for building ffmpeg from source below. Some builds for other operating systems have been included; if you find a match you can use it by renaming it to "ffmpeg".
+
 ### Requirements
 - python3
-- MacOS (if not using MacOS, please follow the instructions toe build ffmpeg from source)
+
+### Included ffmpeg builds
+- MacOS Mojave (10.14.6)
+- Debian Bullseye
+- Ubuntu 18.04
 
 ### Building ffmpeg
 The included ffmpeg asset is built for MacOS. If you're on different OS, you'll need to replace that binary with one you build yourself. Pull down the "dashll" branch here https://gitlab.com/fflabs/ffmpeg/tree/dashll and follow this guide: https://trac.ffmpeg.org/wiki/CompilationGuide/Generic. Once finished, copy and replace the ffmpeg binary with your built one. Please open an issue if you're having trouble getting this running.
