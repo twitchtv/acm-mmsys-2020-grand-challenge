@@ -72,6 +72,9 @@ async function run() {
     return window.abrHistory;
   });
   console.log("Run complete");
+  if (!metrics) {
+    console.log("No metrics were returned. Stats will not be logged.");
+  }
   console.log(metrics);
   ({ switchHistory, ...result } = metrics);
   result.averageBitrate = stats.computeAverageBitrate(switchHistory);
