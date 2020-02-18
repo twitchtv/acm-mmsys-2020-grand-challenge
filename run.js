@@ -64,7 +64,10 @@ async function run() {
   await runNetworkPattern(cdpClient, networkPattern);
 
   const metrics = await page.evaluate(() => {
-    window.stopRecording();
+    if (window.stopRecording) {
+      // Guard against closing the browser window early
+      window.stopRecording();
+    }
     player.pause();
     return window.abrHistory;
   });
