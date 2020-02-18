@@ -26,17 +26,19 @@ This repo contains assets for Twitch's ACM MMSys 2020 Grand Challenge, [Adaptati
 - In a separate terminal window, start the ingest server by running `bash run_server.sh` in the `dash-ll-server` folder
 
 From here you have a few options:
-#### Executing test runs
+### Executing test runs
 This option should be used for validating your solution against our network patterns.
 
 - Execute the following command: `npm run test`
-    - If your computer isn't fast enough (see the "Help!" section below), try running the fast profile: `env PROFILE=PROFILE_FAST npm run test`
+    - If your computer isn't fast enough (see the "Help!" section below), try running the fast profile: `npm run test:fast`
+- When the test run has concluded, end the program in the same shell (cmd+c on mac, ctrl+c on windows)
+- Tests results are written to the results/ folder
 
 Note: The python server (`bash run_server.sh` step above) and the dash server (`grunt dev` step above) must be running to execute these tests!
 
 This will kick off an automated test, during which network conditions will be emulated. At the end of the run the statistics will be logged. We'll be adding new test runs throughout the challenge.
 
-#### Local development
+### Local development
 This option should be used for developing a solution.
 
 - In a new terminal, naviagte into the `dash-ll-server` folder
@@ -48,7 +50,7 @@ This option should be used for developing a solution.
 
 To verify everything is working correctly, check that playback of Big Buck Bunny is functioning at the above link. The player should be able to stream smoothly configured down to 0.5s of latency
 
-#### Local Network Emulation
+### Local Network Emulation
 See https://developers.google.com/web/tools/chrome-devtools/network#throttle on how to simulate network conditions in Chrome. This will be useful for testing your work.
 
 ### Network Profiles
