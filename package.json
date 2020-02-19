@@ -10,8 +10,8 @@
   "devDependencies": {},
   "scripts": {
     "test": "bash ./dash-ll-server/run_gen.sh ${PROFILE} $npm_config_profile & node run.js ${PROFILE}",
-    "test:fast": "env PROFILE=PROFILE_FAST npm run test",
-    "test:normal": "env PROFILE=PROFILE_NORMAL npm run test"
+    "test:fast": "env PROFILE=PROFILE_FAST npm run --silent test",
+    "test:normal": "env PROFILE=PROFILE_NORMAL npm run --silent test"
   },
   "repository": {
     "type": "git",
