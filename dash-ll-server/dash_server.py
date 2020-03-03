@@ -162,17 +162,17 @@ class StreamCache:
 
     @contextlib.contextmanager
     def add_entry(self, key, val):
-        # XXX handle key already present
         self._logger.debug('cache add: %s', key)
+        with self._lock:
+            if key in self._streams:
+                raise ValueError('Duplicate cache entry: %s' % key)
+            self._streams[key] = val
         try:
-            with self._lock:
-                self._streams[key] = val
             yield val
         finally:
             with self._lock:
                 del self._streams[key]
             self._logger.debug('cache delete: %s', key)
-
 
 class DashRequestHandler(hs.BaseHTTPRequestHandler):
     # required for chunked transfer
@@ -323,7 +323,7 @@ class DashServer(hs.ThreadingHTTPServer):
 def main(argv):
     parser = argparse.ArgumentParser('DASH server')
 
-    parser.add_argument('-a', '--address', default = '')
+    parser.add_argument('-a', '--address', default = 'localhost')
     parser.add_argument('-p', '--port',    type = int, default = 8000)
 
     group = parser.add_mutually_exclusive_group()
