@@ -5,9 +5,7 @@ PORT="${2}"
 FF="${3}"
 PROFILE="${4}"
 INPUT="/dev/video0"
-INPUT_FPS="24"
 ID=live
-VCODEC=h264_vaapi
 VCODEC=libx264
 COLOR=bt709
 
@@ -29,8 +27,8 @@ fi
 
 echo ${FF} -h all | grep ldash
 
-PROFILE_FAST="-b:v:0 100K -s:v:0 640x360 -b:v:1 300K -s:v:1 852x480 -map 0:v:0 -map 0:v:0 -adaptation_sets id=0,seg_duration=0.5,streams=0,1"
-PROFILE_NORMAL="-b:v:0 200K -s:v:0 640x360 -b:v:1 600K -s:v:1 852x480 -b:v:2 1000K -s:v:2 1280x720 -map 0:v:0 -map 0:v:0 -map 0:v:0 -adaptation_sets id=0,seg_duration=0.5,streams=0,1,2"
+PROFILE_FAST="-b:v:0 100K -s:v:0 640x360 -b:v:1 300K -s:v:1 852x480 -map 0:v:0 -map 0:v:0 -bufsize 200K -adaptation_sets id=0,seg_duration=0.5,streams=0,1"
+PROFILE_NORMAL="-b:v:0 200K -s:v:0 640x360 -b:v:1 600K -s:v:1 852x480 -b:v:2 1000K -s:v:2 1280x720 -map 0:v:0 -map 0:v:0 -map 0:v:0 -bufsize 200K -adaptation_sets id=0,seg_duration=0.5,streams=0,1,2"
 
 LADDER_PROFILE=""
 if [ "$PROFILE" == "PROFILE_FAST" ]
