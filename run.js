@@ -1,11 +1,21 @@
 const fs = require("fs");
 const puppeteer = require("puppeteer-core");
-const patterns = require("./network-patterns.js");
+const normalNetworkPatterns = require("./normal-network-patterns.js");
+const fastNetworkPatterns = require("./fast-network-patterns.js");
 const stats = require("./stats");
 const CHROME_PATH =
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
-const PROFILE = process.env.PROFILE;
+let patterns;
+if (process.env.npm_package_config_ffmpeg_profile === 'PROFILE_FAST') {
+  patterns = fastNetworkPatterns;
+} else {
+  patterns = normalNetworkPatterns
+}
+
+const configNetworkProfile = process.env.npm_package_config_network_profile;
+const NETWORK_PROFILE = patterns[configNetworkProfile] || patterns.PROFILE_CASCADE;
+console.log("Network profile:", NETWORK_PROFILE);
 
 run()
   .then((result) => {
@@ -13,7 +23,7 @@ run()
     if (!fs.existsSync('./results')){
       fs.mkdirSync('./results');
     }
-    fs.writeFileSync(`./results/run-${new Date().toISOString().split(' ').join('-')}.json`, JSON.stringify(result));
+    fs.writeFileSync(`./results/run-${NETWORK_PROFILE}-${new Date().toISOString().split(' ').join('-')}.json`, JSON.stringify(result));
   })
   .catch(error => console.log(error));
 
@@ -59,9 +69,7 @@ async function run() {
     window.startRecording();
   });
 
-  const networkPattern = patterns[PROFILE] || patterns.PROFILE_NORMAL;
-  console.log(networkPattern);
-  await runNetworkPattern(cdpClient, networkPattern);
+  await runNetworkPattern(cdpClient, NETWORK_PROFILE);
 
   const metrics = await page.evaluate(() => {
     if (window.stopRecording) {

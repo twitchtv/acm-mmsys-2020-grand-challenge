@@ -30,13 +30,24 @@ From here you have a few options:
 This option should be used for validating your solution against our network patterns.
 
 - Execute the following command: `npm run test`
-    - If your computer isn't fast enough (see the "Help!" section below), try running the fast profile: `npm run test:fast`
+    - If your computer isn't fast enough, see the "Help!" section below
 - When the test run has concluded, end the program in the same shell (cmd+c on mac, ctrl+c on windows)
 - Tests results are written to the results/ folder
 
 Note: The python server (`bash run_server.sh` step above) and the dash server (`grunt dev` step above) must be running to execute these tests!
-
 This will kick off an automated test, during which network conditions will be emulated. At the end of the run the statistics will be logged. We'll be adding new test runs throughout the challenge.
+
+#### Configuring Test Runs
+There are several network profiles which can be tested against. In order to set a profile, change the `network_profile` option within the `config` block in the `package.json`. The following profiles are currently available:
+    - PROFILE_CASCADE
+    - PROFILE_INTRA_CASCADE
+    - PROFILE_SPIKE
+    - PROFILE_SLOW_JITTERS
+    - PROFILE_FAST_JITTERS
+
+You may also add and run your own configs. For examples on how to do so, please use the pattern found in `network-patterns.js`.
+
+If your computer isn't fast enough to run the normal FFMpeg ladder, change the `ffmpeg_profile` option in the config block to `PROFILE_FAST`. Note that this uses a different set of network profiles.
 
 ### Local development
 This option should be used for developing a solution.

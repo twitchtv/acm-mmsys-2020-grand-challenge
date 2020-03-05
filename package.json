@@ -8,10 +8,12 @@
     "puppeteer-core": "^2.1.1"
   },
   "devDependencies": {},
+  "config": {
+    "ffmpeg_profile": "PROFILE_NORMAL",
+    "network_profile": "PROFILE_CASCADE"
+  },
   "scripts": {
-    "test": "bash ./dash-ll-server/run_gen.sh ${PROFILE} $npm_config_profile & node run.js ${PROFILE}",
-    "test:fast": "env PROFILE=PROFILE_FAST npm run --silent test",
-    "test:normal": "env PROFILE=PROFILE_NORMAL npm run --silent test"
+    "test": "bash ./dash-ll-server/run_gen.sh $npm_package_config_ffmpeg_profile & node run.js $npm_package_config_network_profile || true"
   },
   "repository": {
     "type": "git",
