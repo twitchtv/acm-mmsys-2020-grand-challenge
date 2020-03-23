@@ -21,7 +21,7 @@ We reserve the right to test submissions any way we see fit, including with medi
 
 ### NQoE
 
-NQoE is an aggregate measure that considers five essential metrics: bitrate selected, bitrate switches, rebuffering time, live latency, and playback speed.
+NQoE is an aggregate measure that considers five essential metrics: bitrate selected, bitrate switches, rebuffering time, live latency, and playback speed. See [the NQoE paper](NQoE.pdf) for more details. Thanks to Ali C. Begen and his team for making this paper and research available.
 
 ## Evaluation
 
